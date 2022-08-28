@@ -1,0 +1,96 @@
+/*
+ * Copyright (C) 2019, Inc.
+ * arch/arm64/boot/dts/rockchip/lcd-edp2560x1600-LTL101DL03.dtsi
+ * lcd model: ltl101dl03
+ * resolution: 2560x1600
+ */
+
+/ {
+	edp_panel: edp_panel {
+		compatible = "simple-panel";
+		backlight = <&backlight>;
+		//power-supply = <&vcc_lcd>;//vcca_0v9
+		enable-gpios = <&gpio1 RK_PB5 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&gpio4 RK_PD6 GPIO_ACTIVE_LOW>;
+		//pinctrl-names = "default";
+		//pinctrl-0 = <&lcd_panel_reset>;
+		prepare-delay-ms = <20>;
+		enable-delay-ms = <20>;
+		reset-delay-ms = <20>;
+
+		display-timings {
+			native-mode = <&timing0>;
+			timing0: timing0 {
+				clock-frequency = <205000000>;
+				hactive = <2560>;
+				vactive = <1600>;
+				hfront-porch = <12>;
+				hsync-len = <16>;
+				hback-porch = <48>;
+				vfront-porch = <8>;
+				vsync-len = <4>;
+				vback-porch = <8>;
+				hsync-active = <0>;
+				vsync-active = <0>;
+				de-active = <0>;
+				pixelclk-active = <0>;
+			};
+		};
+
+		ports {
+			panel_in_edp: endpoint {
+				remote-endpoint = <&edp_out_panel>;
+			};
+		};
+	};
+};
+
+&backlight {
+	status = "okay";
+	enable-gpios = <&gpio4 RK_PD5 GPIO_ACTIVE_HIGH>;
+};
+
+&edp {
+	status = "okay";
+	force-hpd;
+
+	ports {
+		port@1 {
+			reg = <1>;
+
+			edp_out_panel: endpoint {
+				remote-endpoint = <&panel_in_edp>;
+			};
+		};
+	};
+};
+
+&edp_in_vopb {
+	status = "okay";
+};
+
+&edp_in_vopl {
+	status = "disabled";
+};
+
+&route_edp {
+	status = "okay";
+	connect = <&vopb_out_edp>;
+};
+
+&i2c1 {
+	status = "okay";
+	i2c-scl-rising-time-ns = <345>;
+	i2c-scl-falling-time-ns = <11>;
+
+	gt9xx: gt9xx@14 {
+		compatible = "goodix,gt9xx";
+		reg = <0x14>;
+		touch-gpio = <&gpio1 20 IRQ_TYPE_EDGE_RISING>;
+		reset-gpio = <&gpio1 9 GPIO_ACTIVE_LOW>;
+		max-x = <2560>;
+		max-y = <1600>;
+		tp-size = <101>;
+	};
+};
+

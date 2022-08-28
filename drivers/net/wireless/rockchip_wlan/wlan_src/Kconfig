@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0
+config NXP_8987
+	tristate "nxp 8987 sdio WiFi"
+	---help---
+	  Help message of nxp8987
